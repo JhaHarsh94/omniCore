@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 
 const jwt = require('jsonwebtoken')
 
-const userRegistration =  async() =>{
+const userRegistration =  async(req,res) =>{
     try{
 
         const {name,email, password} = req.body // first get the name, email and password...
@@ -36,7 +36,7 @@ const userRegistration =  async() =>{
 }
 
 
-const login = () =>{
+const login = (req,res) =>{
     const {email,password} = req.body // first get the email and password
     try{
         const checkTheUser = User.findOne({email}) // now check the user has registered with the same email or not...
@@ -64,10 +64,8 @@ const login = () =>{
 
         // now create the token using jwt
         const token = jwt.sign({
-            id: checkTheUser?.id,
+            id: checkTheUser?._id,
             role: checkTheUser?.role,
-            username: checkTheUser?.username,
-            password: checkTheUser?.password
         },
         process.env.Secret_key,
         {expiresIn: "60m"}
@@ -79,4 +77,9 @@ const login = () =>{
             message: 'Got some error'
         })
     }
+}
+
+const authMiddleWare = (req,res,next) => {
+    
+
 }
