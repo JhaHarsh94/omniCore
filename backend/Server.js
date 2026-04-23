@@ -1,20 +1,24 @@
 const express = require('express')
-
-const app = express()
-const managerRoute = require('./routes/Manager/index.js')
-const cashierRoute = require('./routes/Cashier/index.js')
-
-
-const PORT = process.env.PORTNO
-
 const dotenv = require('dotenv')
 dotenv.config()
 
+const { default: connectDB } = require('./config/mongodb.js')
+const authRoute = require('./routes/Authentication/index.js')
+const managerReportRouter = require('./routes/Reports/index.js')
+const cashierOrdersRouter = require('./routes/Orders/index.js')
+const adminProductsRouter = require('./routes/Admin/index.js')
 
-app.use(express.json())
-app.use('api/manager',managerRoute)
+const app = express()
+const PORT = process.env.PORTNO
+connectDB()
 
 
+
+app.use(express.json()) // middleware
+app.use('/api/auth',authRoute)
+app.use('/api/products',adminProductsRouter)
+app.use('/api/orders',cashierOrdersRouter)
+app.use('/api/reports',managerReportRouter)
 
 
 
