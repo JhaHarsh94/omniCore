@@ -4,9 +4,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const userRegistration = async (req, res) => {
-  try {
-    const { name, email, password } = req.body; // first get the name, email and password...
+  const { name, email, password } = req.body; // first get the name, email and password...
 
+  try {
     const hashPassword = await bcrypt.hash(password, 10); // now hash that password...
 
     // create the new user and change the password with hashpassword
@@ -30,10 +30,11 @@ const userRegistration = async (req, res) => {
   }
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body; // first get the email and password
+
   try {
-    const checkTheUser = User.findOne({ email }); // now check the user has registered with the same email or not...
+    const checkTheUser = await User.findOne({ email }); // now check the user has registered with the same email or not...
 
     // if the user did not register
     if (!checkTheUser) {
@@ -44,7 +45,7 @@ const login = (req, res) => {
     }
 
     // now compare the password with the password you entered
-    const matchThePassword = bcrypt.compare(password, checkTheUser.password);
+    const matchThePassword = await bcrypt.compare(password,checkTheUser.password);
 
     // if password did not match
     if (!matchThePassword) {
@@ -60,9 +61,14 @@ const login = (req, res) => {
         id: checkTheUser?._id,
         role: checkTheUser?.role,
       },
-      process.env.Secret_key,
+      process.env.SECRET_KEY,
       { expiresIn: "60m" },
     );
+    res.json({
+      success: true,
+      message: 'logged in successfully',
+      token
+    })
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -71,6 +77,4 @@ const login = (req, res) => {
   }
 };
 
-
-
-module.exports = {userRegistration,login}
+module.exports = { userRegistration, login };
