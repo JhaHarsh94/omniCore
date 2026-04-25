@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const userRegistration = async (req, res) => {
-  const { name, email, password } = req.body; // first get the name, email and password...
+  const { name, email, password, role} = req.body; // first get the name, email and password...
 
   try {
     const hashPassword = await bcrypt.hash(password, 10); // now hash that password...
@@ -14,6 +14,7 @@ const userRegistration = async (req, res) => {
       name,
       email,
       password: hashPassword,
+      role
     });
 
     await newUser.save();

@@ -14,9 +14,9 @@ connectDB()
 
 app.use(express.json()) // middleware
 app.use('/api/auth',authRoute)
-app.use('/api/products',adminProductsRouter)
-app.use('/api/orders',cashierOrdersRouter)
-app.use('/api/reports',managerReportRouter)
+app.use('/api/admin/products',adminProductsRouter)
+app.use('/api/cashier/orders',cashierOrdersRouter)
+app.use('/api/manager/reports',managerReportRouter)
 
 
 
