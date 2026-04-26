@@ -1,5 +1,8 @@
+const jwt = require("jsonwebtoken");
+
+
+
 const authMiddleWare = (req, res, next) => {
-  const jwt = require("jsonwebtoken");
 
   const authHeader = req.headers["authorization"];
 
@@ -11,6 +14,7 @@ const authMiddleWare = (req, res, next) => {
       message: "You have No token",
     });
   }
+
   try {
     const decode = jwt.verify(token, process.env.SECRET_KEY);
 
@@ -18,7 +22,7 @@ const authMiddleWare = (req, res, next) => {
 
     next()
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: "got some error...",
     });
