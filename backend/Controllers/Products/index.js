@@ -2,36 +2,88 @@ import React from 'react'
 
 const products = require('../../Models/Product.js')
 
-const getAllTheProducts = async(req,res) => {
+
+const  addProduct = async(req,res) => {
 
     try{
 
         
-        const {id} = req.params
+        const {title, image, description, category, price, salePrice, totalStock} = req.body
         
-        const getProduct = await products.findById(id)
+        const newProduct = new products({
+            title,
+            image,
+            description,
+            category,
+            price,
+            salePrice,
+            totalStock,
+        })
         
-        if(!getProduct){
-            res.status(404).json({
-                success: false,
-                message: 'No product found',
-                
-            })
-        }
+        await newProduct.save()
         
-        return res.status(200).json({
+        res.status(201).json({
             success: true,
-            data: getProduct
+            data: newProduct,
         })
     }
     catch(err){
         res.status(500).json({
             success: false,
-            message: `Your error is${err}`
+            message: 'got some error...'
         })
     }
+
+
+
+
+
+
 
 }
 
 
-module.exports = getAllTheProducts
+const getTheProducts = async(req,res) => {
+    try{
+
+        const productList = await products.find({})
+        
+        res.status(200).json({
+            success: true,
+            data: productList,
+        })
+    }
+    catch(err){
+        res.status(500).json({
+            success: false,
+            message: 'got some error...'
+        })
+    }
+}
+
+
+const updateTheProducts = async(req,res) =>{
+    try{
+        const {id}  = req.params
+        const {title, image, description, category, price, salePrice, totalStock} = req.body
+
+        const findProductAndUpdate = await products.findById(id)
+
+        if(!findProductAndUpdate){
+            res.status(400).json({
+                success: false, 
+                message: 'No products found...'
+
+            })
+        }
+
+        
+
+    }
+    catch(err){
+        res.status(500).json({
+            success: false, 
+            message: 'got some error...'
+        })
+    }
+}
