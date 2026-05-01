@@ -1,5 +1,5 @@
 const express = require('express')
-const { userRegistration, login } = require('../../Controllers/authController')
+const { userRegistration, login } = require('../../Controllers/Authentication/authController.js')
 const authMiddleWare = require('../../Middleware/auth.js')
 
 
