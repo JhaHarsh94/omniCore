@@ -1,7 +1,26 @@
 
+const { ImageUpload } = require("../../helpers/cloudinary.js");
 const products = require("../../Models/Product.js");
 
+const addImage = async(req,res)=>{
+  try{
+   const b64 = Buffer.from(req.file.buffer).toString('base64')
+   const url = "data:" + req.file.mimetype + ";base64," + b64
+   const result = await ImageUpload(url)
 
+    res.json({
+      success: true, 
+      result
+    })
+
+  }
+  catch(err){
+    res.status(500).json({
+      success: false, 
+      message: 'got some error...'
+    })
+  }
+}
 
 const addProduct = async (req, res) => {
   try {

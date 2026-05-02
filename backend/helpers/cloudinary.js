@@ -1,0 +1,24 @@
+const cloudinary = require('cloudinary').v2
+const multer = require('multer')
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET_KEY
+})
+
+
+const storage =  new multer.memoryStorage() // now use the multer to store the image
+
+// create the async function to upload the image
+async function ImageUpload(file){
+    const result = await cloudinary.uploader.upload(file,{
+        resource_type: 'auto'
+    })
+    return result
+}
+
+
+const upload = multer({storage})
+
+module.exports = {upload,ImageUpload}
