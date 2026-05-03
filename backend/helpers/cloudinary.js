@@ -21,4 +21,7 @@ async function ImageUpload(file){
 
 const upload = multer({storage})
 
+// console.log(console.log("API KEY:", process.env.CLOUDINARY_API_KEY))
+
+
 module.exports = {upload,ImageUpload}
