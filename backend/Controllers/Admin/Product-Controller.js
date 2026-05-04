@@ -1,62 +1,22 @@
-
-const { ImageUpload } = require("../../helpers/cloudinary.js");
 const products = require("../../Models/Product.js");
+const { ImageUpload } = require("../../helpers/cloudinary.js");
 
-const addImage = async(req,res)=>{
-  try{
-
-    if(!req.file){
-      res.status(400).json({
+const addImage = async (req, res) => {
+  try {
+    if (!req.file) {
+     return res.status(400).json({
         success: false,
-        message: 'No file uploaded...'
-      })
+        message: "No file uploaded...",
+      });
     }
 
-
-   const b64 = Buffer.from(req.file.buffer).toString('base64')
-   const url = "data:" + req.file.mimetype + ";base64," + b64
-   const result = await ImageUpload(url)
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    const url = "data:" + req.file.mimetype + ";base64," + b64;
+    const result = await ImageUpload(url);
 
     res.status(200).json({
-      success: true, 
-      data: result
-    })
-  }
-  catch(err){
-    res.status(500).json({
-      success: false, 
-      message: 'got some error...'
-    })
-  }
-}
-
-const addProduct = async (req, res) => {
-  try {
-    const {
-      title,
-      image,
-      description,
-      category,
-      price,
-      salePrice,
-      totalStock,
-    } = req.body;
-
-    const newProduct = new products({
-      title,
-      image,
-      description,
-      category,
-      price,
-      salePrice,
-      totalStock,
-    });
-
-    await newProduct.save();
-
-    res.status(201).json({
       success: true,
-      data: newProduct,
+      data: result,
     });
   } catch (err) {
     res.status(500).json({
@@ -66,6 +26,50 @@ const addProduct = async (req, res) => {
   }
 };
 
+const addProduct = async (req, res) => {
+  try {
+    const {title,description,category,price,salePrice,totalStock} = req.body;
+    
+    console.log(req.body)
+    console.log(req.file)
+
+    if(!req.file){
+      res.status(400).json({
+        success:false,
+        message: 'Image not uploaded...'
+      })
+    }
+
+    const uploadImage = await ImageUpload(req.file.buffer)
+
+
+    const newProduct = new products({
+      title,
+      description,
+      category,
+      price,
+      salePrice,
+      totalStock,
+      image: uploadImage.secure_url
+    });
+
+    await newProduct.save();
+
+    res.status(201).json({
+      success: true,
+      data: newProduct,
+    });
+
+  } catch (err) {
+    console.log(`${err}`)
+    res.status(500).json({
+      success: false,
+      message: "got some error...",
+    });
+  }
+
+
+};
 
 const getTheProducts = async (req, res) => {
   try {
@@ -83,38 +87,34 @@ const getTheProducts = async (req, res) => {
   }
 };
 
-const getSingleProduct = async(req,res) => {
-  try{
-    const {id} = req.params
-    const singleProduct = await products.findById(id)
+const getSingleProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const singleProduct = await products.findById(id);
 
     res.status(404).json({
       success: false,
-      message: 'No Product found'
-    })
+      message: "No Product found",
+    });
 
     res.status(200).json({
       success: true,
-      data: singleProduct
-    })
-
-
-
-  }
-  catch(err){
+      data: singleProduct,
+    });
+  } catch (err) {
     res.status(500).json({
       success: false,
-      message: 'got some an error...'
-    })
+      message: "got some an error...",
+    });
   }
-}
+};
 
 const updateTheProducts = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      title,
       image,
+      title,
       description,
       category,
       price,
@@ -131,8 +131,8 @@ const updateTheProducts = async (req, res) => {
       });
     }
 
-    findProductAndUpdate.title = title || findProductAndUpdate.title;
     findProductAndUpdate.image = image || findProductAndUpdate.image;
+    findProductAndUpdate.title = title || findProductAndUpdate.title;
     findProductAndUpdate.description =
       description || findProductAndUpdate.description;
     findProductAndUpdate.category = category || findProductAndUpdate.category;
@@ -180,5 +180,11 @@ const deleteTheProducts = async (req, res) => {
   }
 };
 
-
-module.exports = {addImage,addProduct,getTheProducts,getSingleProduct,updateTheProducts,deleteTheProducts}
+module.exports = {
+  addImage,
+  addProduct,
+  getTheProducts,
+  getSingleProduct,
+  updateTheProducts,
+  deleteTheProducts,
+};

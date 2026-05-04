@@ -12,10 +12,18 @@ const storage =  new multer.memoryStorage() // now use the multer to store the i
 
 // create the async function to upload the image
 async function ImageUpload(file){
-    const result = await cloudinary.uploader.upload(file,{
-        resource_type: 'auto'
-    })
-    return result
+   return new Promise((resolve,reject)=>{
+    const uploadStream = cloudinary.uploader.upload_stream(
+        {resource_type: 'auto', folder: 'products'},
+        (error, result) =>{
+            if(error) return reject(error)
+                resolve(result)
+
+        }
+    )
+    uploadStream.end(file)
+   }
+)
 }
 
 

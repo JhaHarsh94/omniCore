@@ -7,9 +7,9 @@ const { upload } = require('../../helpers/cloudinary')
 
 const router = express.Router()
 
-router.post('/upload-image',upload.single('img'),addImage)
+router.post('/upload-image',authMiddleWare,authorize(['admin']),upload.single('image'),addImage)
 
-router.post('/',authMiddleWare,authorize(['admin']),addProduct)
+router.post('/add',authMiddleWare,authorize(['admin']),upload.single('image'),addProduct)
 router.get('/',getTheProducts)
 router.get('/:id',getSingleProduct)
 router.put('/:id',authMiddleWare,authorize(['admin']),updateTheProducts)
