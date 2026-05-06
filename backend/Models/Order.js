@@ -2,35 +2,30 @@ const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     cartId: String, 
-    cartItems:[
-        {
-            productId: {
-                type: String,
-                ref: 'Products',
-                required: true,
+    cartItems: {    
+        type: [
+            {
+                productId: {type: mongoose.Schema.Types.ObjectId, ref: 'Products', required: true},
+                title: String,
+                price: Number,
+                image: String,
+                quantity: {type: Number, required: true},
             },
-            title: String,
-            image: String,
-            price: Number,
-            salePrice: Number,
-            quantity: {
-                type: Number, 
-                required: true
-            },
-        }
-    ],
+        ],
+        required: true
+    },
     addressDetails: 
         {
             addressId: String,
             name:String,
             phoneNo: Number,
-            Country: String,
-            pincode: Number,
+            country: String,
+            pincode: String,
             city: String,
             address: String,
 
@@ -40,13 +35,11 @@ const orderSchema = new mongoose.Schema({
     paymentMethod: {type: String, required: true},
     paymentStatus: {type: String, default: 'pending'},
     payerId: String,
-    totalAmount: Number,
-    orderDate: Date,
-    orderUpdateDate: Date,
-
-
-
-})
+    paymentId: String,
+    totalAmount: {type: Number, required: true},
+},
+ {timestamps: true}
+)
 
 
 module.exports = mongoose.model('Orders',orderSchema)
