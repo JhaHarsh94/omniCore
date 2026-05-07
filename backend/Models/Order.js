@@ -31,6 +31,7 @@ const orderSchema = new mongoose.Schema({
 
 
         },
+     orderType: {type: String, enum: ['POS','ONLINE'], default: 'POS'},   
     orderStatus: {type: String, default: 'pending'},
     paymentMethod: {type: String, required: true},
     paymentStatus: {type: String, default: 'pending'},
