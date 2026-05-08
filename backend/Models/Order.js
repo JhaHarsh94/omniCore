@@ -33,7 +33,7 @@ const orderSchema = new mongoose.Schema({
         },
      orderType: {type: String, enum: ['POS','ONLINE'], default: 'POS'},   
     orderStatus: {type: String, default: 'pending'},
-    paymentMethod: {type: String, required: true},
+    paymentMethod: {type: String, enum: ['upi','card', 'cash'], required: true},
     paymentStatus: {type: String, default: 'pending'},
     payerId: String,
     paymentId: String,

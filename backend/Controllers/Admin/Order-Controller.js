@@ -4,6 +4,17 @@ const createOrder = async (req, res) => {
   try {
     const { cartItems, orderType, paymentMethod, totalAmount } = req.body;
 
+
+    // if the cartItems is not there or cartItems length length is 0 
+    if(!cartItems || cartItems.length === 0){
+      return res.status(400).json({
+        success: false,
+        message: 'Cart can not be empty'
+      })
+    }
+
+    
+    // if the order type is pos and the role is not cashier 
     if (orderType === "POS") {
       if (req.user.role !== "cashier") {
         return res.status(403).json({
@@ -13,15 +24,9 @@ const createOrder = async (req, res) => {
       }
     }
 
-    if (orderType === "ONLINE") {
-      if (req.user.role !== "user") {
-        return res.status(403).json({
-          success: false,
-          message: "Only user can create ONLINE orders",
-        });
-      }
-    }
+   
 
+    // create the new order
     const newOrder = new order({
       userId: req.user.id,
       orderType,
@@ -30,8 +35,10 @@ const createOrder = async (req, res) => {
       totalAmount,
     });
 
+
     await newOrder.save();
 
+    
     res.status(201).json({
       success: true,
       data: newOrder,
@@ -42,7 +49,7 @@ const createOrder = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "You got an error...",
-    });
+    }); 
   }
 };
 
@@ -50,7 +57,9 @@ const createOrder = async (req, res) => {
 const fetchAllTheOrdersForUsers = async (req, res) => {
   try {
     // get all the orders...
-    const getOrders = await order.find({});
+    const getOrders = await order.find({
+      userId: req.user.id
+    });
 
     // if no order is not found...
     if (!getOrders.length) {
@@ -75,14 +84,14 @@ const fetchAllTheOrdersForUsers = async (req, res) => {
 };
 
 // to get the order details for admin
-const fetchAllTheOrdersForAdmin = async (req, res) => {
+const fetchSingleOrdersForAdmin = async (req, res) => {
   try {
     // get the id from query param
     const { id } = req.params;
 
-    const fetchOrderDetailsAdmin = await order.findById(id);
+    const fetchOrderDetailsForAdmin = await order.findById(id);
 
-    if (!fetchOrderDetailsAdmin) {
+    if (!fetchOrderDetailsForAdmin) {
       return res.status(404).json({
         success: false,
         message: "No Order found",
@@ -91,7 +100,7 @@ const fetchAllTheOrdersForAdmin = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: fetchOrderDetailsAdmin,
+      data: fetchOrderDetailsForAdmin,
     });
   } catch (err) {
     res.status(500).json({
@@ -117,7 +126,7 @@ const updateTheOrderDetails = async (req, res) => {
       });
     }
 
-    await order.findByIdAndUpdate(id, { orderStatus });
+    await order.findByIdAndUpdate(id, { orderStatus },{new: true});
 
     res.status(200).json({
       success: true,
@@ -160,8 +169,12 @@ const deleteTheOrderDetails = async (req, res) => {
 };
 
 module.exports = {
+  createOrder,
   fetchAllTheOrdersForUsers,
-  fetchAllTheOrdersForAdmin,
+  fetchSingleOrdersForAdmin,
   updateTheOrderDetails,
   deleteTheOrderDetails,
 };
+
+
+
