@@ -16,7 +16,7 @@ const createOrder = async (req, res) => {
     
     // if the order type is pos and the role is not cashier 
     if (orderType === "POS") {
-      if (req.user.role !== "cashier") {
+      if (req.user.role !== "cashier"  && req.user.role !== "admin") {
         return res.status(403).json({
           success: false,
           message: "Only cashier can create POS orders.",
