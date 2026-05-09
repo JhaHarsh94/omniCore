@@ -19,7 +19,6 @@ app.use('/api/cashier/orders',cashierOrdersRouter)
 app.use('/api/manager/reports',managerReportRouter)
 
 
-
 app.listen(PORT,()=>{
     console.log(`Your Server is running on Port No ${PORT}`)
 })

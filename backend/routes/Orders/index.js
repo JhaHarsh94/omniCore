@@ -7,7 +7,7 @@ const router = express.Router()
 
 
 router.post('/create',authMiddleWare,authorize(['admin','cashier']),createOrder)
-router.get('/orders',authMiddleWare,authorize(['admin','cashier']),fetchAllTheOrdersForUsers)
+router.get('/getOrders',authMiddleWare,authorize(['admin','cashier']),fetchAllTheOrdersForUsers)
 router.get('/getOrderForAdmin/:id', authMiddleWare,authorize(['admin']),fetchSingleOrdersForAdmin)
 router.put('/updateOrder/:id',authMiddleWare,authorize(['admin']),updateTheOrderDetails)
 router.delete('/deleteOrder/:id',authMiddleWare,authorize(['admin']),deleteTheOrderDetails)
