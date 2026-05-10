@@ -1,4 +1,5 @@
 const order = require("../../Models/Order.js");
+const Product = require("../../Models/Product.js");
 
 const createOrder = async (req, res) => {
   try {
@@ -22,6 +23,29 @@ const createOrder = async (req, res) => {
           message: "Only cashier can create POS orders.",
         });
       }
+    }
+
+    // check the products stock, if the product stock is less than the quantity of the product
+    for (const item of cartItems){
+      const product = await Product.findById(item.productId)
+      if(!product){
+        return res.status(404).json({
+          success: false,
+          message: 'Product not found'
+        })
+      }
+
+      if(product.totalStock < item.quantity){
+        return res.status(400).json({
+          success: false,
+          message: `Not enough stock for ${product.title}`
+        })
+      }
+
+      product.totalStock -= item.quantity
+      await product.save()
+
+
     }
 
    
@@ -126,12 +150,13 @@ const updateTheOrderDetails = async (req, res) => {
       });
     }
 
-    await order.findByIdAndUpdate(id, { orderStatus },{new: true});
+    const updateOrder = await order.findByIdAndUpdate(id, { orderStatus },{new: true});
 
     res.status(200).json({
       success: true,
-      message: "order status updated successfully...",
+      data: updateOrder
     });
+    
   } catch (err) {
     console.log(err);
     res.status(500).json({
