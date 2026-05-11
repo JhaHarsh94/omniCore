@@ -25,27 +25,26 @@ const createOrder = async (req, res) => {
       }
     }
 
-    // check the products stock, if the product stock is less than the quantity of the product
+    //run the loop for the cartItems.
     for (const item of cartItems){
       const product = await Product.findById(item.productId)
+      // if no product found then show this error.
       if(!product){
         return res.status(404).json({
           success: false,
           message: 'Product not found'
         })
       }
-
+      // if the product totalStock is less than the quantity of the product
       if(product.totalStock < item.quantity){
         return res.status(400).json({
           success: false,
           message: `Not enough stock for ${product.title}`
         })
       }
-
+      // calculate the totalStock by decreasing the totalStock from the product quantity.
       product.totalStock -= item.quantity
       await product.save()
-
-
     }
 
    
@@ -60,16 +59,13 @@ const createOrder = async (req, res) => {
     });
 
 
-    await newOrder.save();
-
-    
+    await newOrder.save()
     res.status(201).json({
       success: true,
       data: newOrder,
     });
   } catch (err) {
     console.log(err);
-
     res.status(500).json({
       success: false,
       message: "You got an error...",
@@ -178,6 +174,16 @@ const deleteTheOrderDetails = async (req, res) => {
         success: false,
         message: "No Order found",
       });
+    }
+
+    // if order is deleted restore the stock of the product.
+    for (const deletedItems of deleteOrders.cartItems){
+      const product = await Product.findById(deletedItems.productId)
+      if(product){
+        product.totalStock = product.totalStock + deletedItems.quantity
+      }
+
+
     }
 
     res.status(200).json({
